@@ -17,7 +17,7 @@ I am a beginner student, so when helping me, please:
 - **Break JSX into functions instead of using inline ternaries** → If a condition is needed, **use a separate helper function** rather than inlining logic.  
 
 Before generating code, **ask clarifying questions** to ensure I have fully thought through my model.  
-Make sure I have shared my **`Simulation.jsx` and `diseaseModel.js` files** so your response works within my teacher’s template.
+Make sure I have shared my **`Simulation.jsx` and `diseaseModel.js` files** so your response works within my teacher’s template. as he gave me this prompt to do so
 
 Remind me to commit my code to version control before pasting in any edits made by AI and remind me I need to give credit in my version control notes as well as in comments in my code whenever I add AI. When you make changes to my code, please try
 to add comments indicating what you've done, giving yourself credit, and helping

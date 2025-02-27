@@ -29,7 +29,9 @@ const renderPatients = (population) => {
     if (p.newlyInfected) {
       return "🤧"; // Sneezing Face for new cases
     } else if (p.infected) {
-      return "🤢"; // Vomiting Face for already sick
+      return "⚰️"; // coffin Face for already sick
+    } else if (p.dead) {
+      return "⚰️"; // Coffin emoji for dead people
     } else {
       return "😀"; // Healthy person
     }
@@ -71,31 +73,32 @@ const renderPatients = (population) => {
 
 const Simulation = () => {
   const [popSize, setPopSize] = useState(20);
-  const [population, setPopulation] = useState(
-    createPopulation(popSize * popSize)
-  );
+  const [population, setPopulation] = useState(createPopulation(popSize * popSize));
   const [diseaseData, setDiseaseData] = useState([]);
   const [lineToGraph, setLineToGraph] = useState("infected");
   const [autoMode, setAutoMode] = useState(false);
-  const [simulationParameters, setSimulationParameters] = useState(
-    defaultSimulationParameters
-  );
+  const [simulationParameters, setSimulationParameters] = useState(defaultSimulationParameters);
 
   // Runs a single simulation step
   const runTurn = () => {
     let newPopulation = updatePopulation([...population], simulationParameters);
     setPopulation(newPopulation);
+    
     let newStats = computeStatistics(newPopulation, diseaseData.length);
     setDiseaseData([...diseaseData, newStats]);
+
+    // Check if everyone is dead and stop the simulation if true
+    if (newPopulation.every(p => p.dead)) {
+      setAutoMode(false); // Stop auto-run if everyone is dead
+    }
   };
 
-  // Resets the simulation
+  // Reset simulation to initial state
   const resetSimulation = () => {
     setPopulation(createPopulation(popSize * popSize));
     setDiseaseData([]);
   };
 
-  // Auto-run simulation effect
   useEffect(() => {
     if (autoMode) {
       setTimeout(runTurn, 500);
@@ -106,12 +109,6 @@ const Simulation = () => {
     <div>
       <section className="top">
         <h1>My Custom Simulation</h1>
-        <p>
-          Edit <code>simulationOne/diseaseModel.js</code> to define how your
-          simulation works. This one should try to introduce *one* complicating
-          feature to the basic model.
-        </p>
-
         <p>
           Population: {population.length}. Infected:{" "}
           {population.filter((p) => p.infected).length}
@@ -143,8 +140,6 @@ const Simulation = () => {
           <label>
             Population:
             <div className="vertical-stack">
-              {/* Population uses a "square" size to allow a UI that makes it easy to slide
-          from a small population to a large one. */}
               <input
                 type="range"
                 min="3"
@@ -166,18 +161,20 @@ const Simulation = () => {
       </section>
 
       <section className="side-by-side">
-        {renderChart(diseaseData, lineToGraph, setLineToGraph, trackedStats)}
+        {renderChart(diseaseData, "infected", setLineToGraph, trackedStats)}
 
         <div className="world">
-          <div
-            className="population-box"
-            style={{ width: boxSize, height: boxSize }}
-          >
+          <div className="population-box" style={{ width: boxSize, height: boxSize }}>
             {renderPatients(population)}
           </div>
         </div>
 
         {renderTable(diseaseData, trackedStats)}
+
+        {/* Death Toll Display */}
+        <div className="death-toll-box">
+          <h2>Death Toll: {diseaseData[diseaseData.length - 1]?.dead || 0}</h2>
+        </div>
       </section>
     </div>
   );

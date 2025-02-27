@@ -11,25 +11,25 @@ You can implement a simple model which does one of the following:
    in line) or randomly selecting people to be in contact (just do one of these for your model).
 
 2. Take the "handshake" simulation code as your model, but make it so you can recover from the disease. How does the
-spread of the disease change when you set people to recover after a set number of days.
+   spread of the disease change when you set people to recover after a set number of days.
 
 3. Add a "quarantine" percentage to the handshake model: if a person is infected, they have a chance of being quarantined
-and not interacting with others in each round.
+   and not interacting with others in each round.
 
 */
 
 /**
- * Authors: 
+ * Authors: Joshua S chat gpt
  * 
  * What we are simulating:
- * 
+ * outbrake of bubonic plauge 
  * What elements we have to add:
- * 
+ * Deaths 
  * In plain language, what our model does:
- * 
+ * People will be infected by the bubonic plauge starting with people 2 who had been infected by the fleas carrying it 
+ * as it grows in size we will see a large death toll
+ * I plan to make it in a small area with around 50 people with the death tool trying to be all as it would be accurate to the plauge 
  */
-
-
 
 export const defaultSimulationParameters = {
   infectionChance: 50,
@@ -57,6 +57,8 @@ export const createPopulation = (size = 1600) => {
       x: (100 * (i % sideSize)) / sideSize, // X-coordinate within 100 units
       y: (100 * Math.floor(i / sideSize)) / sideSize, // Y-coordinate scaled similarly
       infected: false,
+      daysInfected: 0, // Track how many rounds the person has been infected
+      dead: false, // Track if the person is dead
     });
   }
   // Infect patient zero...
@@ -73,13 +75,20 @@ const updateIndividual = (person, contact, params) => {
     // If they were already infected, they are no longer
     // newly infected :)
     person.newlyInfected = false;
+
+    // Increase the days they have been infected
+    person.daysInfected += 1;
+
+    // If they've been infected for 5 rounds or more, mark them as dead
+    if (person.daysInfected >= 5 && !person.dead) {
+      person.dead = true; // Mark them as dead after 5 rounds of infection
+    }
   }
-  if (contact.infected) {
+  
+  if (contact.infected && !person.infected && !person.dead) {
     if (Math.random() * 100 < params.infectionChance) {
-      if (!person.infected) {
-        person.newlyInfected = true;
-      }
       person.infected = true;
+      person.daysInfected = 0; // Reset infection duration when they get infected
     }
   }
 };
@@ -106,24 +115,15 @@ export const updatePopulation = (population, params) => {
 // by Compute Stats below
 export const trackedStats = [
   { label: "Total Infected", value: "infected" },
+  { label: "Total Dead", value: "dead" }  // Track the death toll
 ];
 
 // Example: Compute stats (students customize)
 export const computeStatistics = (population, round) => {
   let infected = 0;
-  for (let p of population) {
-    if (p.infected) {
-      infected += 1; // Count the infected
-    }
-  }
-  return { round, infected };
-};
-
-
-// Example: Compute stats (students customize)
-export const computeStatistics = (population, round) => {
-  let infected = 0;
   let newlyInfected = 0;
+  let dead = 0;
+
   for (let p of population) {
     if (p.infected) {
       infected += 1; // Count the infected
@@ -131,7 +131,9 @@ export const computeStatistics = (population, round) => {
     if (p.newlyInfected) {
       newlyInfected += 1; // Count the newly infected
     }
+    if (p.dead) {
+      dead += 1; // Count the dead
+    }
   }
-  return { round, infected, newlyInfected };
+  return { round, infected, newlyInfected, dead };
 };
-
