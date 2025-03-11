@@ -19,7 +19,7 @@ You can implement a simple model which does one of the following:
 */
 
 /**
- * Authors: Joshua S chat gpt
+ * Authors: Joshua S chat gpt (various help)
  * 
  * What we are simulating:
  * outbrake of bubonic plauge 
