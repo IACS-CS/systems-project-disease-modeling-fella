@@ -48,7 +48,7 @@ import { shufflePopulation } from "../../lib/shufflePopulation";
 
 export const defaultSimulationParameters = {
 infectionChance: 30 // For direct infection
-fleaInfectionChance: 50 // Infection chance from fleas
+,fleaInfectionChance: 50 // Infection chance from fleas
 };
 
 /* Creates your initial population. By default, we *only* track whether people
